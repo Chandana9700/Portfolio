@@ -1,9 +1,30 @@
-// @flow strict
+"use client";
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import BlogCard from './blog-card';
+import { personalData } from '@/utils/data/personal-data';
 
-function Blog({ blogs }) {
+function Blog() {
+  const [blogs, setBlogs] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await fetch(`https://dev.to/api/articles?username=${personalData.devUsername}`);
+        const data = await res.json();
+        const filtered = data
+          .filter((item) => item?.cover_image)
+          .sort(() => Math.random() - 0.5);
+        setBlogs(filtered);
+      } catch (err) {
+        console.error("Failed to fetch blogs:", err);
+      }
+    };
+
+    getData();
+  }, []);
 
   return (
     <div id='blogs' className="relative z-50 border-t my-12 lg:my-24 border-[#25213b]">
@@ -34,7 +55,7 @@ function Blog({ blogs }) {
         }
       </div>
 
-      <div className="flex justify-center  mt-5 lg:mt-12">
+      <div className="flex justify-center mt-5 lg:mt-12">
         <Link
           className="flex items-center gap-1 hover:gap-3 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 px-3 md:px-8 py-3 md:py-4 text-center text-xs md:text-sm font-medium uppercase tracking-wider text-white no-underline transition-all duration-200 ease-out hover:text-white hover:no-underline md:font-semibold"
           role="button"
